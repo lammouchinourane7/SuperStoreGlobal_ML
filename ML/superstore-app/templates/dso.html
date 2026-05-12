@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ config.title }}{% endblock %}
+{% block content %}
+
+<header class="page-header-dark">
+  <div class="container">
+    <nav class="breadcrumb-custom" aria-label="Fil d'Ariane">
+      <a href="{{ url_for('home') }}">Accueil</a>
+      <span class="text-white-50"> › </span>
+      <span class="text-white">{{ dso_id|upper }}</span>
+    </nav>
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+      <div>
+        <h1 class="font-jakarta fw-bold display-6 mb-2">{{ config.title }}</h1>
+        <p class="mb-0 opacity-75">{{ config.goal }}</p>
+      </div>
+      <div class="hero-glass-card text-white p-3" style="min-width: 280px;">
+        <div class="small opacity-75">Responsable</div>
+        <div class="font-jakarta fw-bold">{{ config.owner }}</div>
+        <div class="small opacity-75 mt-2">Modèle</div>
+        <div class="font-jakarta fw-bold">{{ config.model }}</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card-custom p-4 h-100">
+        <h2 class="font-jakarta fw-bold h4 mb-3">Tester le modèle</h2>
+        <p class="text-muted small mb-4">{{ metrics[dso_id] }}</p>
+
+        <form method="post" class="row g-3">
+          {% if config.mode == "cluster" %}
+            {% for name, label in cluster_fields.items() %}
+            <div class="col-12">
+              <label class="form-label small fw-semibold">{{ label }}</label>
+              <input class="form-control" name="{{ name }}" value="{% if name == 'Total_Sales' %}5000{% elif name == 'Avg_Order_Value' %}200{% elif name == 'Order_Count' %}15{% elif name == 'Total_Profit' %}600{% elif name == 'Avg_Profit_Margin' %}0.12{% elif name == 'Avg_Discount_Rate' %}8{% else %}5{% endif %}">
+            </div>
+            {% endfor %}
+          {% elif config.mode in ["sales_rf", "sales_xgb", "classify", "anomaly"] %}
+            {% for name, label, default in order_fields %}
+              {% if config.mode != "sales_rf" and config.mode != "sales_xgb" or name != "Sales" %}
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">{{ label }}</label>
+                <input class="form-control" name="{{ name }}" value="{{ default }}">
+              </div>
+              {% endif %}
+            {% endfor %}
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Catégorie</label>
+              <select class="form-select" name="Category">
+                <option>Office Supplies</option>
+                <option>Technology</option>
+                <option>Furniture</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Sous-catégorie</label>
+              <select class="form-select" name="Sub-Category">
+                <option>Art</option>
+                <option>Appliances</option>
+                <option>Binders</option>
+                <option>Phones</option>
+                <option>Chairs</option>
+              </select>
+            </div>
+          {% elif config.mode == "recommend" %}
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Catégorie produit</label>
+              <select class="form-select" name="Category">
+                <option>Technology</option>
+                <option>Office Supplies</option>
+                <option>Furniture</option>
+              </select>
+            </div>
+          {% endif %}
+
+          <div class="col-12">
+            <button class="btn btn-primary-custom w-100" type="submit">
+              <i class="bi {{ config.icon }} me-1"></i> Calculer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card-custom p-4 h-100">
+        <h2 class="font-jakarta fw-bold h4 mb-3">Résultat & efficacité</h2>
+        {% if result %}
+          <div class="result-highlight mb-4">
+            <div class="small text-muted text-uppercase fw-semibold">{{ result.title }}</div>
+            <div class="font-jakarta fw-bold display-6">{{ result.value }}</div>
+            <p class="text-muted mb-0">{{ result.details }}</p>
+          </div>
+          {% if result.recommendations %}
+          <div class="table-responsive">
+            <table class="table-custom">
+              <thead><tr><th>Produit</th><th class="text-end">Sales</th><th class="text-end">Profit</th></tr></thead>
+              <tbody>
+                {% for row in result.recommendations %}
+                <tr>
+                  <td>{{ row["Product Name"] }}</td>
+                  <td class="text-end font-mono-metrics">{{ "%.2f"|format(row["Sales"]) }}</td>
+                  <td class="text-end font-mono-metrics">{{ "%.2f"|format(row["Profit"]) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+        {% else %}
+          <div class="empty-state">
+            <i class="bi {{ config.icon }}"></i>
+            <h3 class="font-jakarta fw-bold h5 mt-3">Prêt pour le calcul</h3>
+            <p class="text-muted mb-0">Renseigne les champs à gauche pour tester ce DSO sur la logique du notebook.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

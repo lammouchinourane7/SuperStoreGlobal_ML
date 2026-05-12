@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<header class="page-header-dark">
+  <div class="container">
+    <nav class="breadcrumb-custom" aria-label="Fil d'Ariane">
+      <a href="{{ url_for('home') }}">Accueil</a>
+      <span class="text-white-50"> › </span>
+      <span class="text-white">Dashboard</span>
+    </nav>
+    <h1 class="font-jakarta fw-bold display-6 mb-2">Dashboard — Global Superstore</h1>
+    <p class="mb-0 opacity-75">Synthèse des DSO, modèles et performances issus du notebook final.</p>
+  </div>
+</header>
+
+<div class="container py-5">
+  <div class="row g-4 mb-5">
+    <div class="col-md-6 col-xl-3">
+      <div class="card-metric h-100 text-center">
+        <div class="metric-icon text-danger"><i class="bi bi-table"></i></div>
+        <div class="metric-value">51k</div>
+        <div class="font-jakarta fw-semibold small text-secondary text-uppercase mt-2">Lignes brutes</div>
+        <div class="text-muted small">Global_Superstore2.csv</div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="card-metric h-100 text-center">
+        <div class="metric-icon text-success"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="metric-value">14.6k</div>
+        <div class="font-jakarta fw-semibold small text-secondary text-uppercase mt-2">Lignes modélisées</div>
+        <div class="text-muted small">Après filtres et outliers</div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="card-metric h-100 text-center">
+        <div class="metric-icon" style="color: var(--gold);"><i class="bi bi-cpu-fill"></i></div>
+        <div class="metric-value">6</div>
+        <div class="font-jakarta fw-semibold small text-secondary text-uppercase mt-2">DSO</div>
+        <div class="text-muted small">Un même site web</div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="card-metric h-100 text-center">
+        <div class="metric-icon" style="color: var(--primary-light);"><i class="bi bi-trophy-fill"></i></div>
+        <div class="metric-value">0.802</div>
+        <div class="font-jakarta fw-semibold small text-secondary text-uppercase mt-2">Meilleur R²</div>
+        <div class="text-muted small">XGBoost DSO3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-custom p-3">
+    <h2 class="font-jakarta fw-bold h4 mb-3">Tableau de synthèse</h2>
+    <div class="table-responsive">
+      <table class="table-custom">
+        <thead>
+          <tr><th>DSO</th><th>Modèle</th><th>Responsable</th><th>Résultat numérique</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for key, cfg in dso_config.items() %}
+          <tr>
+            <td class="fw-bold">{{ key|upper }}</td>
+            <td>{{ cfg.model }}</td>
+            <td>{{ cfg.owner }}</td>
+            <td class="font-mono-metrics small">{{ metrics[key] }}</td>
+            <td class="text-end"><a class="btn btn-sm btn-secondary-custom" href="{{ url_for('dso_detail', dso_id=key) }}">Ouvrir</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

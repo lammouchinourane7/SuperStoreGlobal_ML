@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Accueil{% endblock %}
+{% block content %}
+
+<section class="hero-section text-white py-5">
+  <div class="container py-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7 animate-fade-in-up">
+        <span class="badge rounded-pill px-3 py-2 mb-3 d-inline-block"
+              style="background: rgba(244, 162, 97, 0.2); color: var(--gold); border: 1px solid var(--gold); font-family: 'Plus Jakarta Sans', sans-serif;">
+          Global Superstore · CRISP-DM · 6 DSO
+        </span>
+        <h1 class="font-jakarta text-white mb-3" style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.15;">
+          Superstore App<br>
+          <span class="hero-title-gradient">ML complet</span>
+        </h1>
+        <p class="mb-4" style="color: rgba(255,255,255,0.85); font-size: 1.05rem; max-width: 42rem;">
+          Une seule interface web pour exploiter les modèles du notebook final : segmentation, ventes,
+          optimisation, recommandation, classification et détection d'anomalies.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a class="btn btn-primary-custom text-decoration-none" href="{{ url_for('dashboard') }}">Dashboard global</a>
+          <a class="btn btn-outline-light-hero text-decoration-none" href="{{ url_for('dso_detail', dso_id='dso1') }}">Tester DSO1</a>
+        </div>
+      </div>
+      <div class="col-lg-5 animate-fade-in-up animate-delay-1">
+        <div class="hero-glass-card text-white">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="font-jakarta fw-bold">Notebook ML</span>
+            <span class="badge rounded-pill px-2 py-1 small live-dot" style="background: var(--accent); color: #fff;">RUN ALL OK</span>
+          </div>
+          <p class="small mb-2 opacity-90"><strong>Dataset :</strong> Global_Superstore2.csv</p>
+          <p class="small mb-2 opacity-90"><strong>Lignes brutes :</strong> 51 290</p>
+          <p class="small mb-2 opacity-90"><strong>Lignes modélisées :</strong> 14 618</p>
+          <p class="small mb-0 opacity-75">Les métriques affichées proviennent du notebook exécuté et sauvegardé.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-white">
+  <div class="container">
+    <h2 class="section-title animate-fade-in-up">Modules DSO</h2>
+    <div class="row g-4">
+      {% for key, cfg in dso_config.items() %}
+      <div class="col-md-6 col-xl-4 animate-fade-in-up">
+        <a class="text-decoration-none text-reset" href="{{ url_for('dso_detail', dso_id=key) }}">
+          <div class="card-custom h-100 p-4">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+              <div class="metric-icon" style="color: var(--accent);"><i class="bi {{ cfg.icon }}"></i></div>
+              {% if readiness[key] %}
+              <span class="badge rounded-pill text-bg-success">prêt</span>
+              {% else %}
+              <span class="badge rounded-pill text-bg-warning">démo</span>
+              {% endif %}
+            </div>
+            <h3 class="font-jakarta fw-bold h5 mb-2">{{ cfg.title }}</h3>
+            <p class="text-muted small mb-3">{{ cfg.goal }}</p>
+            <div class="font-mono-metrics small text-secondary">{{ metrics[key] }}</div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
